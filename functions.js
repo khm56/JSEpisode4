@@ -6,7 +6,7 @@
  * - returns undefined if no matching book is found
  ****************************************************************/
 function getBookById(bookId, books) {
-  // Your code goes here
+  return books.find(book => bookId === book.id)
 }
 
 /**************************************************************
@@ -17,7 +17,7 @@ function getBookById(bookId, books) {
  * - returns undefined if no matching author is found
  ****************************************************************/
 function getAuthorByName(authorName, authors) {
-  // Your code goes here
+  return authors.find(author => author.name.toLowerCase() === authorName.toLowerCase());
 }
 
 /**************************************************************
@@ -27,7 +27,10 @@ function getAuthorByName(authorName, authors) {
  *    [{ author: <NAME>, bookCount: <NUMBER_OF_BOOKS> }]
  ****************************************************************/
 function bookCountsByAuthor(authors) {
-  // Your code goes here
+  return authors.map(author => ({
+    author:author.name,
+    bookCount:author.books.length
+  }))
 }
 
 /**************************************************************
@@ -39,9 +42,21 @@ function bookCountsByAuthor(authors) {
  ****************************************************************/
 function booksByColor(books) {
   const colors = {};
-
   // Your code goes here
-
+  // for(let i=0;i<books.length;i++){
+  //   if(books[i].color in colors){
+  //     colors[books[i].color].push(books[i].title);
+  //   }else{
+  //     colors[books[i].color]=[books[i].title];
+  //   }
+  // }
+  books.forEach(book => {
+    if(book.color in colors){
+        colors[book.color].push(book.title);
+      }else{
+        colors[book.color]=[book.title];
+      }
+  })
   return colors;
 }
 
@@ -55,6 +70,15 @@ function booksByColor(books) {
  ****************************************************************/
 function titlesByAuthorName(authorName, authors, books) {
   // Your code goes here
+  let titles=[];
+  let author=getAuthorByName(authorName, authors);
+  if(author !== undefined){
+    for(let j=0;j<author.books.length;j++){
+      let book = getBookById(author.books[j], books);
+      titles.push(book.title);
+    }
+  }
+  return titles;
 }
 
 /**************************************************************
@@ -65,6 +89,15 @@ function titlesByAuthorName(authorName, authors, books) {
  * Note: assume there will never be a tie
  ****************************************************************/
 function mostProlificAuthor(authors) {
+  let auth;
+  let counter=0;
+  for(let i=0;i<authors.length;i++){
+    if(authors[i].books.length>counter){
+      counter=authors[i].books.length;
+      auth=authors[i].name;
+    }
+  }
+  return auth;
   // Your code goes here
 }
 
@@ -93,6 +126,22 @@ function mostProlificAuthor(authors) {
  ****************************************************************/
 function relatedBooks(bookId, authors, books) {
   // Your code goes here
+  let author=[];
+  let titles=[];
+  for(let i=0;i<authors.length;i++){
+    if(authors[i].books.includes(bookId)){
+      author.push(authors[i]);
+    }
+  }
+  for(let j=0;j<author.length;j++){
+    let temp = titlesByAuthorName(author[j].name, author, books);
+    for(let z=0;z<temp.length;z++){
+      if(!titles.includes(temp[z])){
+        titles.push(temp[z]);
+      }
+    }
+  }
+  return titles;
 }
 
 /**************************************************************
@@ -103,6 +152,24 @@ function relatedBooks(bookId, authors, books) {
  ****************************************************************/
 function friendliestAuthor(authors) {
   // Your code goes here
+  let auth1;
+  let no=0;
+  for(let i=0;i<authors.length;i++){
+    let temp=authors[i].books;
+    let booksshared=0;
+    for(let z=0;z<authors.length;z++){
+      for(let j=0;j<temp.length;j++){
+        if(authors[z].books.includes(temp[j])){
+          booksshared++;
+        }
+      }
+    }
+    if(booksshared>no){
+      auth1=authors[i];
+      no=booksshared;
+    }
+  }
+  return auth1.name;
 }
 
 module.exports = {
